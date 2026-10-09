@@ -44,11 +44,13 @@ apply_tweaks() {
   [[ -f $TOSHY_CFG ]] || return 0
   python3 -I - "$TOSHY_CFG" <<'EOF'
 import sys
-p = sys.argv[1]; s = open(p).read()
+p = sys.argv[1]; s = orig = open(p).read()
+
+# 1. macOS-style ⌘Backspace (delete to start of line). Toshy's default sends Ctrl+Shift+Backspace,
+#    which Chrome, GTK and Electron ignore. Goes in the user_apps slice so it survives upgrades.
 mark = '###  SLICE_MARK_END: user_apps  ###'
-if 'ubuntu-macos-look: Cmd+Backspace' in s or mark not in s:
-    sys.exit(0)
-add = '''# ubuntu-macos-look: Cmd+Backspace deletes to start of line in every text field, like macOS.
+if 'ubuntu-macos-look: Cmd+Backspace' not in s and mark in s:
+    s = s.replace(mark, '''# ubuntu-macos-look: Cmd+Backspace deletes to start of line in every text field, like macOS.
 # Terminals, file managers (Cmd+Backspace = Move to Trash) and VS Code keep their own mapping.
 _uml_not_terminal = matchProps(not_lst=terminals_and_remotes_lod)
 _uml_not_vscode   = matchProps(not_lst=vscodes_lod)
@@ -62,10 +64,19 @@ keymap("User: Cmd+Backspace deletes line left of cursor", {
     not hmp_is_filemanager(ctx)
 )
 
-'''
-open(p + '.before-ubuntu-macos-look', 'w').write(s)
-open(p, 'w').write(s.replace(mark, add + mark, 1))
-print("Added macOS-style Cmd+Backspace.")
+''' + mark, 1)
+    print("Added macOS-style Cmd+Backspace.")
+
+# 2. Hold modifiers until the next key (Toshy defaults to 0 s). Otherwise Option/Cmd combos leak a
+#    bare Alt tap, and Chrome/Electron apps open their menu (e.g. Option+Backspace opens File).
+old = 'suspend             = 0,        # default: 0 sec'
+if old in s:
+    s = s.replace(old, 'suspend             = 2,        # ubuntu-macos-look: no bare Alt taps from Option/Cmd combos', 1)
+    print("Option/Cmd no longer open app menus.")
+
+if s != orig:
+    open(p + '.before-ubuntu-macos-look', 'w').write(orig)
+    open(p, 'w').write(s)
 EOF
 }
 
