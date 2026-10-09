@@ -50,6 +50,10 @@ echo "${B}Backups${N}"
 chk "Déjà Dup installed"  "command -v deja-dup"
 chk "Timeshift installed" "command -v timeshift"
 
+echo "${B}iPhone photos (HEIC)${N}"
+chk "HEIC decoder"          "dpkg -s libheif-plugin-libde265"
+chk "HEIC thumbnails"       "dpkg -s heif-thumbnailer"
+
 echo
 if (( fail == 0 )); then echo "${G}${B}All $pass checks passed.${N}"
 elif (( relog )); then echo "${Y}${B}$pass passed, $fail not yet.${N} Log out and back in, then run verify.sh again."

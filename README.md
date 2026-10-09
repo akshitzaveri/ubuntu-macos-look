@@ -12,6 +12,7 @@ Make Ubuntu look and feel like macOS in one step. No YouTube tutorial, no 30 ter
 - **Readable Quick Settings** in both light and dark. The stock glass theme turns washed-out and gray-cornered on Ubuntu, so this ships a fixed version.
 - **Automatic appearance**: light at 07:00, dark at 18:00
 - **One switch for everything**: the Quick Settings *Dark Style* toggle, *Toggle Appearance* in app search, and **Super+Shift+A** each flip the whole look (themes, icons and wallpaper), like Raycast's appearance toggle
+- **iPhone photos (HEIC)**: open them in the image viewer, see thumbnails in Files, and convert them with `heif-dec photo.HEIC -o photo.jpg`
 - **Backups**: installs Déjà Dup (Time Machine-style file backups) and Timeshift (system snapshots)
 
 ## Requirements
@@ -67,7 +68,7 @@ Right-click **`uninstall.sh`** → **Run as a Program**. It removes the themes, 
 
 - **Files:** `~/.themes/MacTahoe-*`, `~/.local/share/icons/{MacTahoe*,WhiteSur-cursors}`, `~/.local/share/backgrounds/MacTahoe`, `~/.config/gtk-4.0`, `~/.local/bin/macos-theme-*`, `~/.config/systemd/user/macos-theme-*`
 - **Extensions:** Dash to Dock and Blur my Shell (from extensions.gnome.org), plus User Themes (Ubuntu package). Ubuntu Dock and Desktop Icons are disabled, not removed.
-- **apt packages:** git, curl, unzip, sassc, libglib2.0-dev-bin, libxml2-utils, python3, gnome-shell-extensions, deja-dup, timeshift
+- **apt packages:** git, curl, unzip, sassc, libglib2.0-dev-bin, libxml2-utils, python3, gnome-shell-extensions, deja-dup, timeshift, libheif-plugin-libde265, heif-gdk-pixbuf, heif-thumbnailer, libheif-examples
 - **Backup:** your previous settings are saved in `~/.local/share/ubuntu-macos-look/`
 
 ## Known limitations

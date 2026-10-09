@@ -75,6 +75,7 @@ This will install, for your user only:
   • Automatic light (07:00) / dark (18:00) switching that also follows the Dark Style toggle
   • "Toggle Appearance" in app search + Super+Shift+A shortcut
   • Déjà Dup (Backups) and Timeshift — you configure these afterwards
+  • iPhone photo (HEIC) support: open, preview and convert them like on a Mac
 It asks for your password once, for apt packages. Your current settings are backed up first.
 EOF
 read -rp "Continue? [Y/n] " ans </dev/tty
@@ -83,7 +84,8 @@ read -rp "Continue? [Y/n] " ans </dev/tty
 step "1/8 Packages (needs your password)"
 sudo apt-get update -qq </dev/tty
 sudo apt-get install -y git curl unzip sassc libglib2.0-dev-bin libxml2-utils python3 \
-  gnome-shell-extensions deja-dup timeshift </dev/tty
+  gnome-shell-extensions deja-dup timeshift \
+  libheif-plugin-libde265 heif-gdk-pixbuf heif-thumbnailer libheif-examples </dev/tty
 
 step "2/8 Backing up your current settings"
 mkdir -p "$STATE_DIR"
