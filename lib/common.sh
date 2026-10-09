@@ -24,7 +24,16 @@ die()  { echo "${R}✘ $*${N}"; exit 1; }
 
 # Opened by double-click (no terminal)? Re-open inside a terminal window so the user sees progress.
 ensure_terminal() {
-  [[ -t 1 || -n ${UML_IN_TERM:-} ]] && return
+  [[ -n ${UML_IN_TERM:-} ]] && return
+  if [[ -t 1 ]]; then
+    # In a terminal already. Typed at a shell prompt → no pause. Started by Files
+    # ("Run as a Program") straight into a terminal → hold the window open at the end.
+    case $(ps -o comm= -p "$PPID" 2>/dev/null) in
+      bash|zsh|fish|sh|dash|ksh|tcsh|nu) ;;
+      *) UML_IN_TERM=1 ;;
+    esac
+    return
+  fi
   export UML_IN_TERM=1
   local t
   for t in ptyxis gnome-terminal kgx x-terminal-emulator; do

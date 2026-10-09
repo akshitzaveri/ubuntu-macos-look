@@ -4,8 +4,6 @@ here=$(cd "$(dirname "$0")" && pwd)
 source "$here/lib/common.sh"
 if [[ ${1:-} != --inline ]]; then
   ensure_terminal "$@"
-  # Files may already launch us in a terminal; hold that window open too.
-  UML_IN_TERM=1
   trap pause_on_exit EXIT
 fi
 
