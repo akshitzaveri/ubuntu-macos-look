@@ -1,0 +1,7 @@
+[Unit]
+Description=Switch macOS look light/dark by time of day
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/macos-theme-switch

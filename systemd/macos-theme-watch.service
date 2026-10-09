@@ -1,0 +1,11 @@
+[Unit]
+Description=Follow the Dark Style toggle with the full macOS look
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/macos-theme-watch
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

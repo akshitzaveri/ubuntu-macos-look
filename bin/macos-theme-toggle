@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Raycast-style "Toggle Appearance": flip Dark Style; macos-theme-watch applies the full look.
+I=org.gnome.desktop.interface
+if [[ $(gsettings get $I color-scheme) == "'prefer-dark'" ]]; then
+  gsettings set $I color-scheme prefer-light
+else
+  gsettings set $I color-scheme prefer-dark
+fi

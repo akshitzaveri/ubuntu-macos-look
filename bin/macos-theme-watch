@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Follow the Quick Settings "Dark Style" toggle: apply the full look whenever color-scheme changes.
+export PATH=$HOME/.local/bin:$PATH
+last=
+apply() {
+  local m=light
+  [[ $(gsettings get org.gnome.desktop.interface color-scheme) == "'prefer-dark'" ]] && m=dark
+  [[ $m == "$last" ]] && return
+  last=$m
+  macos-theme-switch "$m"
+}
+apply
+gsettings monitor org.gnome.desktop.interface color-scheme | while read -r _; do apply; done
