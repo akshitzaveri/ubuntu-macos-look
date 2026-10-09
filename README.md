@@ -15,6 +15,8 @@ Make Ubuntu look and feel like macOS in one step. No YouTube tutorial, no 30 ter
 - **iPhone photos (HEIC)**: open them in the image viewer, see thumbnails in Files, and convert them with `heif-dec photo.HEIC -o photo.jpg`
 - **Backups**: installs Déjà Dup (Time Machine-style file backups) and Timeshift (system snapshots)
 
+**New to Ubuntu from a Mac?** Read the [Guide](GUIDE.md): what each script sets up, how to use Spotlight, Quick Look, screenshots and backups here, and what isn't available (with alternatives).
+
 ## Requirements
 
 - Ubuntu 24.04 or newer with the default GNOME desktop (GNOME 46+)
@@ -50,6 +52,15 @@ If it says **NOT QUITE YET**, log out and back in, then run the installer again.
 
 - **Backups** (Déjà Dup): choose an external drive or Google Drive, select your home folder, and turn on *Back Up Automatically*. You can then right-click any file or folder in Files → *Revert to Previous Version*.
 - **Timeshift**: choose **RSYNC** and keep about 5 daily snapshots. If an update ever breaks Ubuntu, you can roll back.
+
+## Optional: more macOS
+
+Run these after the main install. Each takes two runs with a log out in between, just like `install.sh`.
+
+- **`extras.sh`**: Spotlight on Super+Space, Quick Look (press Space in Files), Apple menu, clock on the right, notifications top-right, Inter font, rounded window corners, ⌘⇧3/4/5 screenshots, two-finger right click
+- **`toshy.sh`**: Mac keyboard shortcuts through [Toshy](https://github.com/RedBearAK/toshy). The Alt key acts as ⌘, so ⌘C/V/Q/Tab/Space and ⌘Backspace work. Undo with `bash toshy.sh --undo`.
+
+See the [Guide](GUIDE.md) for how to use everything.
 
 ## Optional: macOS-style login screen
 

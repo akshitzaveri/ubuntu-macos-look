@@ -40,6 +40,20 @@ for e in "${EXTENSIONS[@]}"; do
   echo "  removed $e"
 done
 
+if [[ -f $STATE_DIR/extras-settings.done ]]; then
+  step "Removing extras (Spotlight, Apple menu, menu bar, rounded corners)"
+  for f in "$STATE_DIR"/extras_*.dconf; do
+    p=$(basename "$f" .dconf); p=${p#extras}; p=${p//_//}
+    dconf reset -f "$p"; [[ -s $f ]] && dconf load "$p" < "$f"
+  done
+  for e in just-perfection-desktop@just-perfection logomenu@aryan_k rounded-window-corners@fxgn; do
+    gnome-extensions uninstall "$e" 2>/dev/null || rm -rf ~/.local/share/gnome-shell/extensions/"$e"
+  done
+  gsettings reset org.gnome.desktop.interface font-name
+  gsettings reset org.gnome.desktop.interface document-font-name
+  gsettings reset org.gnome.desktop.wm.preferences titlebar-font
+fi
+
 if [[ $(readlink -f /usr/share/gnome-shell/gdm-theme.gresource) == /usr/local/share/ubuntu-macos-look/* ]]; then
   UML_IN_TERM= bash "$here/login-screen.sh" --undo
 fi

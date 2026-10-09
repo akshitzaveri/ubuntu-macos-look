@@ -19,6 +19,11 @@ uri="file://$HOME/.local/share/backgrounds/MacTahoe/$wall"
 gsettings set org.gnome.desktop.background picture-uri "$uri"
 gsettings set org.gnome.desktop.background picture-uri-dark "$uri"
 
+# Apple menu icon (extras.sh): black logo on the light menu bar, white on the dark one
+[[ $mode == light ]] && apple=apple-black.svg || apple=apple-white.svg
+icon=$HOME/.local/share/ubuntu-macos-look/icons/$apple
+[[ -f $icon ]] && dconf write /org/gnome/shell/extensions/Logo-menu/custom-icon-path "'$icon'"
+
 # libadwaita (GTK4) apps read ~/.config/gtk-4.0/gtk.css
 G4=$HOME/.config/gtk-4.0
 [[ -f $G4/gtk-$C.css ]] && ln -sfn "$G4/gtk-$C.css" "$G4/gtk.css"
