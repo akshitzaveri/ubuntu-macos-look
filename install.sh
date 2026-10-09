@@ -31,6 +31,22 @@ fi
 
 banner() { echo; echo "${2}${B}════════════════════════════════════════════════════════════${N}"; echo "${2}${B}  $1${N}"; echo "${2}${B}════════════════════════════════════════════════════════════${N}"; }
 
+# Optional parts chosen at install time (extras.sh, toshy.sh), run in the same pass so there's one log out.
+OPTIONS_FILE=$STATE_DIR/options
+run_optional() {   # returns 0 when every chosen part is fully done
+  local rc=0
+  [[ -f $OPTIONS_FILE ]] || return 0
+  if grep -qx extras "$OPTIONS_FILE"; then
+    step "Extras: Spotlight, Quick Look, Apple menu, menu bar, Inter, screenshots"
+    UML_IN_TERM= UML_CHAINED=1 bash "$here/extras.sh" || rc=1
+  fi
+  if grep -qx toshy "$OPTIONS_FILE"; then
+    step "Mac keyboard shortcuts (Toshy)"
+    UML_IN_TERM= UML_CHAINED=1 bash "$here/toshy.sh" || rc=1
+  fi
+  return $rc
+}
+
 # Second run (after logging back in): turn everything on and check, no re-download.
 finish() {
   step "Finishing setup"
@@ -39,8 +55,16 @@ finish() {
   "$HOME/.local/bin/macos-theme-switch" >/dev/null
   systemctl --user restart macos-theme-watch.service
   sleep 1
-  if out=$(bash "$here/verify.sh" --inline 2>&1); then
+  local opt_ok=0; run_optional || opt_ok=1
+  if out=$(bash "$here/verify.sh" --inline 2>&1) && (( opt_ok == 0 )); then
     banner "ALL DONE ✅  Your Mac look is installed." "$G"
+    if grep -qx extras "$OPTIONS_FILE" 2>/dev/null; then
+      echo; echo "  Spotlight: Super+Space · Quick Look: select a file in Files, press Space · Screenshots: Super+Shift+3/4/5"
+    fi
+    if grep -qx toshy "$OPTIONS_FILE" 2>/dev/null; then
+      echo "  Mac keyboard: Alt (next to the space bar) works as ⌘ — ⌘C, ⌘V, ⌘Q, ⌘Tab, ⌘Space, ⌘Backspace"
+      echo "  Multi-OS keyboard? Use its Windows/PC mode. Stuck key? Press F16 or run toshy-services-stop."
+    fi
     cat <<EOF
 
   Now confirm it: $VERIFY
@@ -52,7 +76,7 @@ finish() {
   Undo everything any time with uninstall.sh.
 EOF
   else
-    echo "$out"
+    echo "$out" | grep -E '✘|passed|failed' || true
     banner "NOT QUITE YET — log out and back in, then run the installer again" "$Y"
     echo; echo "  To run it again, $RERUN"
     echo "  If this keeps happening, open an issue with a screenshot of this window."
@@ -80,6 +104,18 @@ It asks for your password once, for apt packages. Your current settings are back
 EOF
 read -rp "Continue? [Y/n] " ans </dev/tty
 [[ ${ans:-Y} =~ ^[Yy]$ ]] || exit 0
+
+echo
+echo "${B}Optional extras${N} (installed in the same run, still one log out):"
+echo "  • Extras: Spotlight on Super+Space, Quick Look (Space in Files), Apple menu, clock on the right,"
+echo "    Inter font, rounded corners, Super+Shift+3/4/5 screenshots, two-finger right click"
+read -rp "    Add extras? [Y/n] " want_extras </dev/tty
+echo "  • Mac keyboard (Toshy): Alt next to the space bar works as ⌘ — ⌘C, ⌘V, ⌘Q, ⌘Tab, ⌘Space"
+echo "    Runs a background key-remapping service; asks a few questions of its own."
+read -rp "    Add Mac keyboard? [Y/n] " want_toshy </dev/tty
+mkdir -p "$STATE_DIR"; : > "$OPTIONS_FILE"
+[[ ${want_extras:-Y} =~ ^[Yy]$ ]] && echo extras >> "$OPTIONS_FILE"
+[[ ${want_toshy:-Y}  =~ ^[Yy]$ ]] && echo toshy  >> "$OPTIONS_FILE"
 
 step "1/8 Packages (needs your password)"
 sudo apt-get update -qq </dev/tty
@@ -195,6 +231,8 @@ systemctl --user enable macos-theme-watch.service
 systemctl --user restart macos-theme-watch.service
 
 echo "$VERSION_STAMP" > "$STATE_DIR/installed"
+
+run_optional || true   # first pass: installs; the second run (after log out) finishes them
 
 step "8/8 Checking"
 all_active=1

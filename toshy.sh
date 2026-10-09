@@ -87,9 +87,11 @@ if [[ -f $TOSHY_CFG ]] && id -nG | grep -qw input; then
   systemctl --user restart toshy-config.service 2>/dev/null || true
   sleep 5
   if systemctl --user is-active -q toshy-config.service && [[ $(ext_state "$HELPER") == ACTIVE ]]; then
+    [[ -n ${UML_CHAINED:-} ]] && exit 0
     banner_ok="ALL DONE ✅  Mac keyboard shortcuts are on."
     echo; echo "${G}${B}$banner_ok${N}"; tests
   else
+    [[ -n ${UML_CHAINED:-} ]] && { echo "  Toshy isn't running yet."; exit 3; }
     echo "${Y}${B}Toshy isn't running yet.${N} Log out and back in, then run toshy.sh again."
     echo "Log: journalctl --user -u toshy-config.service -n 30"
   fi
@@ -102,8 +104,10 @@ Toshy runs in the background and remaps keys per app so ⌘ shortcuts work like 
 It adds you to the 'input' group, enables the uinput module, installs a few packages, and turns
 off "Super key opens the overview" (⌘Space does that instead). Undo any time: bash toshy.sh --undo
 EOF
-read -rp "Continue? [Y/n] " ans </dev/tty
-[[ ${ans:-Y} =~ ^[Yy]$ ]] || exit 0
+if [[ -z ${UML_CHAINED:-} ]]; then
+  read -rp "Continue? [Y/n] " ans </dev/tty
+  [[ ${ans:-Y} =~ ^[Yy]$ ]] || exit 0
+fi
 
 step "1/3 GNOME helper extension"
 url=$(curl -fsSL "https://extensions.gnome.org/extension-info/?uuid=$HELPER&shell_version=$SHELL_MAJOR" \
@@ -119,6 +123,7 @@ fetch_toshy
 
 step "3/3 macOS-style ⌘Backspace"
 apply_tweaks
+[[ -n ${UML_CHAINED:-} ]] && exit 3   # needs a log out; install.sh shows the banner
 
 cat <<EOF
 

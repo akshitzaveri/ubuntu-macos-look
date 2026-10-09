@@ -29,7 +29,7 @@ It takes two runs of the same installer, with a log out in between. The installe
 **Option A: download and click**
 
 1. Click **Code → Download ZIP** on this page, then open the ZIP and extract it.
-2. Open the extracted folder in **Files**, right-click **`install.sh`** → **Run as a Program**, and type your password when asked.
+2. Open the extracted folder in **Files**, right-click **`install.sh`** → **Run as a Program**, and type your password when asked. It also asks whether to add the **extras** (Spotlight, Quick Look, Apple menu…) and **Mac keyboard shortcuts** (Toshy). Both are recommended, and both install in the same run.
 3. When it says **STEP 1 OF 2 DONE**, **log out and log back in**. A restart isn't needed.
 4. Run **`install.sh`** again. It takes a few seconds the second time.
 5. When it says **ALL DONE ✅**, right-click **`verify.sh`** → **Run as a Program** to confirm. It should say *All checks passed*.
@@ -55,7 +55,7 @@ If it says **NOT QUITE YET**, log out and back in, then run the installer again.
 
 ## Optional: more macOS
 
-Run these after the main install. Each takes two runs with a log out in between, just like `install.sh`.
+`install.sh` offers both of these when you install. If you skipped them, run them on their own later; each takes two runs with a log out in between, just like `install.sh`.
 
 - **`extras.sh`**: Spotlight on Super+Space, Quick Look (press Space in Files), Apple menu, clock on the right, notifications top-right, Inter font, rounded window corners, ⌘⇧3/4/5 screenshots, two-finger right click
 - **`toshy.sh`**: Mac keyboard shortcuts through [Toshy](https://github.com/RedBearAK/toshy). The Alt key acts as ⌘, so ⌘C/V/Q/Tab/Space and ⌘Backspace work. Undo with `bash toshy.sh --undo`.

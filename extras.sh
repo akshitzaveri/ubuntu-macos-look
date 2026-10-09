@@ -112,6 +112,7 @@ for e in "${EXTRA_EXTENSIONS[@]}"; do
   s=$(ext_state "$e"); [[ $s == ACTIVE ]] || all=0
   printf "  %-45s %s\n" "$e" "${s:-installed, needs log out}"
 done
+if [[ -n ${UML_CHAINED:-} ]]; then (( all )) && exit 0 || exit 3; fi   # install.sh prints the summary
 if (( all )); then
   echo; echo "${G}${B}ALL DONE ✅${N}"
 else
