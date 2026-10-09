@@ -51,6 +51,20 @@ If it says **NOT QUITE YET**, log out and back in, then run the installer again.
 - **Backups** (Déjà Dup): choose an external drive or Google Drive, select your home folder, and turn on *Back Up Automatically*. You can then right-click any file or folder in Files → *Revert to Previous Version*.
 - **Timeshift**: choose **RSYNC** and keep about 5 daily snapshots. If an update ever breaks Ubuntu, you can roll back.
 
+## Optional: macOS-style login screen
+
+Gives the login screen the blurred, darkened MacTahoe wallpaper and MacTahoe styling, and removes the Ubuntu logo. Run it after the main install:
+
+Right-click **`login-screen.sh`** → **Run as a Program**, or:
+
+```bash
+bash ~/.cache/ubuntu-macos-look/repo/login-screen.sh
+```
+
+This affects every user on the computer, so it's a separate, optional step. It doesn't edit any file Ubuntu ships. It builds the theme in a temporary folder, installs it as a new file, and points Ubuntu's `gdm-theme.gresource` link at it, so Ubuntu updates can't overwrite it. To undo it, run `login-screen.sh --undo`; `uninstall.sh` also undoes it. If the login screen ever looks broken, press **Ctrl+Alt+F3**, log in at the text prompt, run the undo command, then run `sudo systemctl restart gdm3`.
+
+Tip: add a profile picture in **Settings → System → Users**. It shows on the login screen, like on a Mac.
+
 ## Everyday use
 
 | Want to… | Do this |
@@ -69,6 +83,7 @@ Right-click **`uninstall.sh`** → **Run as a Program**. It removes the themes, 
 - **Files:** `~/.themes/MacTahoe-*`, `~/.local/share/icons/{MacTahoe*,WhiteSur-cursors}`, `~/.local/share/backgrounds/MacTahoe`, `~/.config/gtk-4.0`, `~/.local/bin/macos-theme-*`, `~/.config/systemd/user/macos-theme-*`
 - **Extensions:** Dash to Dock and Blur my Shell (from extensions.gnome.org), plus User Themes (Ubuntu package). Ubuntu Dock and Desktop Icons are disabled, not removed.
 - **apt packages:** git, curl, unzip, sassc, libglib2.0-dev-bin, libxml2-utils, python3, gnome-shell-extensions, deja-dup, timeshift, libheif-plugin-libde265, heif-gdk-pixbuf, heif-thumbnailer, libheif-examples
+- **Login screen (optional):** `/usr/local/share/ubuntu-macos-look/gdm-theme.gresource`, `/usr/share/gdm/dconf/95-ubuntu-macos-look`, and the `gdm-theme.gresource` alternatives link
 - **Backup:** your previous settings are saved in `~/.local/share/ubuntu-macos-look/`
 
 ## Known limitations

@@ -40,5 +40,9 @@ for e in "${EXTENSIONS[@]}"; do
   echo "  removed $e"
 done
 
+if [[ $(readlink -f /usr/share/gnome-shell/gdm-theme.gresource) == /usr/local/share/ubuntu-macos-look/* ]]; then
+  UML_IN_TERM= bash "$here/login-screen.sh" --undo
+fi
+
 rm -rf "$STATE_DIR" "$CACHE_DIR"
 echo; echo "${G}Done.${N} Log out and back in to finish."
