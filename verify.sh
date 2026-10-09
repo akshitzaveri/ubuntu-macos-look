@@ -2,7 +2,12 @@
 # Check that ubuntu-macos-look is fully installed. Double-click (Run as a Program) or: bash verify.sh
 here=$(cd "$(dirname "$0")" && pwd)
 source "$here/lib/common.sh"
-[[ ${1:-} == --inline ]] || { ensure_terminal "$@"; trap pause_on_exit EXIT; }
+if [[ ${1:-} != --inline ]]; then
+  ensure_terminal "$@"
+  # Files may already launch us in a terminal; hold that window open too.
+  UML_IN_TERM=1
+  trap pause_on_exit EXIT
+fi
 
 pass=0; fail=0; relog=0
 ok()  { echo "  ${G}✔${N} $1"; pass=$((pass+1)); }

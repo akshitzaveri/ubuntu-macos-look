@@ -30,9 +30,9 @@ ensure_terminal() {
   for t in ptyxis gnome-terminal kgx x-terminal-emulator; do
     command -v "$t" >/dev/null || continue
     case $t in
-      ptyxis)         exec ptyxis --new-window -- bash "$0" "$@" ;;
-      gnome-terminal) exec gnome-terminal -- bash "$0" "$@" ;;
-      *)              exec "$t" -e bash "$0" "$@" ;;
+      ptyxis)         exec ptyxis --new-window -- env UML_IN_TERM=1 bash "$0" "$@" ;;
+      gnome-terminal) exec gnome-terminal -- env UML_IN_TERM=1 bash "$0" "$@" ;;
+      *)              exec "$t" -e env UML_IN_TERM=1 bash "$0" "$@" ;;
     esac
   done
 }
