@@ -33,18 +33,19 @@ banner() { echo; echo "${2}${B}════════════════�
 
 # Optional parts chosen at install time (extras.sh, toshy.sh), run in the same pass so there's one log out.
 OPTIONS_FILE=$STATE_DIR/options
-run_optional() {   # returns 0 when every chosen part is fully done
-  local rc=0
+FAILED_PARTS=()
+run_optional() {   # returns 0 when every chosen part is fully done; failures go in FAILED_PARTS
+  FAILED_PARTS=()
   [[ -f $OPTIONS_FILE ]] || return 0
   if grep -qx extras "$OPTIONS_FILE"; then
     step "Extras: Spotlight, Quick Look, Apple menu, menu bar, Inter, screenshots"
-    UML_IN_TERM= UML_CHAINED=1 bash "$here/extras.sh" || rc=1
+    UML_IN_TERM= UML_CHAINED=1 bash "$here/extras.sh" || FAILED_PARTS+=(extras)
   fi
   if grep -qx toshy "$OPTIONS_FILE"; then
     step "Mac keyboard shortcuts (Toshy)"
-    UML_IN_TERM= UML_CHAINED=1 bash "$here/toshy.sh" || rc=1
+    UML_IN_TERM= UML_CHAINED=1 bash "$here/toshy.sh" || FAILED_PARTS+=(toshy)
   fi
-  return $rc
+  (( ${#FAILED_PARTS[@]} == 0 ))
 }
 
 # Second run (after logging back in): turn everything on and check, no re-download.
@@ -55,8 +56,11 @@ finish() {
   "$HOME/.local/bin/macos-theme-switch" >/dev/null
   systemctl --user restart macos-theme-watch.service
   sleep 1
-  local opt_ok=0; run_optional || opt_ok=1
-  if out=$(bash "$here/verify.sh" --inline 2>&1) && (( opt_ok == 0 )); then
+  local opt_ok=0 look_ok=0 out tries
+  run_optional || opt_ok=1
+  out=$(bash "$here/verify.sh" --inline 2>&1) || look_ok=1
+  if (( look_ok == 0 && opt_ok == 0 )); then
+    rm -f "$STATE_DIR/finish-tries"
     banner "ALL DONE ✅  Your Mac look is installed." "$G"
     if grep -qx extras "$OPTIONS_FILE" 2>/dev/null; then
       echo; echo "  Spotlight: Super+Space · Quick Look: select a file in Files, press Space · Screenshots: Super+Shift+3/4/5"
@@ -76,10 +80,32 @@ finish() {
   Undo everything any time with uninstall.sh.
 EOF
   else
-    echo "$out" | grep -E '✘|passed|failed' || true
-    banner "NOT QUITE YET — log out and back in, then run the installer again" "$Y"
-    echo; echo "  To run it again, $RERUN"
-    echo "  If this keeps happening, open an issue with a screenshot of this window."
+    tries=$(( $(cat "$STATE_DIR/finish-tries" 2>/dev/null || echo 0) + 1 ))
+    echo "$tries" > "$STATE_DIR/finish-tries"
+    echo; echo "${B}What isn't finished yet:${N}"
+    (( look_ok )) && echo "$out" | grep -E '✘' | sed 's/^/  Main look:/'
+    for part in "${FAILED_PARTS[@]}"; do
+      case $part in
+        extras) echo "  Extras: an extension isn't active (see the list under 'Extras' above)" ;;
+        toshy)  echo "  Mac keyboard (Toshy): its service isn't running" ;;
+      esac
+    done
+    if (( tries < 2 )); then
+      banner "NOT QUITE YET — log out and back in, then run the installer again" "$Y"
+      echo; echo "  To run it again, $RERUN"
+    else
+      # Logging out again won't help now. Never leave a half-working keyboard behind.
+      if [[ " ${FAILED_PARTS[*]} " == *" toshy "* ]]; then
+        command -v toshy-services-stop >/dev/null && toshy-services-stop >/dev/null 2>&1 || true
+        sed -i '/^toshy$/d' "$OPTIONS_FILE"
+        echo; echo "  ${Y}Mac keyboard (Toshy) didn't start, so it's been turned off; your keyboard works normally.${N}"
+        echo "  Try it on its own later with: bash $here/toshy.sh   (undo: bash $here/toshy.sh --undo)"
+      fi
+      banner "STOPPED — logging out again won't fix the items above" "$R"
+      echo
+      echo "  Everything else is installed and working. Please open an issue with a screenshot of this window:"
+      echo "  https://github.com/akshitzaveri/ubuntu-macos-look/issues"
+    fi
   fi
 }
 
