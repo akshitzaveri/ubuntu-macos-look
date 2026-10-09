@@ -19,6 +19,52 @@ ensure_terminal "$@"
 trap pause_on_exit EXIT
 require_gnome
 
+VERSION_STAMP="$MACTAHOE_GTK_COMMIT $MACTAHOE_ICON_COMMIT $WHITESUR_CURSORS_COMMIT"
+if [[ $here == "$HOME/.cache/ubuntu-macos-look/repo" ]]; then   # started via curl | bash
+  RERUN="run the same command again:
+     curl -fsSL https://raw.githubusercontent.com/akshitzaveri/ubuntu-macos-look/main/install.sh | bash"
+  VERIFY="~/.cache/ubuntu-macos-look/repo/verify.sh"
+else
+  RERUN="right-click install.sh → Run as a Program (or: bash install.sh)"
+  VERIFY="right-click verify.sh → Run as a Program (or: bash verify.sh)"
+fi
+
+banner() { echo; echo "${2}${B}════════════════════════════════════════════════════════════${N}"; echo "${2}${B}  $1${N}"; echo "${2}${B}════════════════════════════════════════════════════════════${N}"; }
+
+# Second run (after logging back in): turn everything on and check, no re-download.
+finish() {
+  step "Finishing setup"
+  for e in "$USER_THEME" "${EXTENSIONS[@]}"; do gnome-extensions enable "$e" 2>/dev/null || true; done
+  for e in ubuntu-dock@ubuntu.com ding@rastersoft.com; do gnome-extensions disable "$e" 2>/dev/null || true; done
+  "$HOME/.local/bin/macos-theme-switch" >/dev/null
+  systemctl --user restart macos-theme-watch.service
+  sleep 1
+  if out=$(bash "$here/verify.sh" --inline 2>&1); then
+    banner "ALL DONE ✅  Your Mac look is installed." "$G"
+    cat <<EOF
+
+  Now confirm it: $VERIFY
+  It should say "All checks passed".
+
+  Then set up backups from the app grid:
+    • Backups (Déjà Dup): external drive or Google Drive, Back Up Automatically
+    • Timeshift: RSYNC, ~5 daily snapshots
+  Undo everything any time with uninstall.sh.
+EOF
+  else
+    echo "$out"
+    banner "NOT QUITE YET — log out and back in, then run the installer again" "$Y"
+    echo; echo "  To run it again, $RERUN"
+    echo "  If this keeps happening, open an issue with a screenshot of this window."
+  fi
+}
+
+if [[ ${1:-} != --reinstall && -f $STATE_DIR/installed && $(cat "$STATE_DIR/installed") == "$VERSION_STAMP" ]]; then
+  echo "${B}ubuntu-macos-look${N} is already installed — finishing setup. (Use --reinstall to install again.)"
+  finish
+  exit 0
+fi
+
 cat <<EOF
 ${B}ubuntu-macos-look${N} — a macOS-style desktop for Ubuntu (GNOME $SHELL_MAJOR)
 
@@ -146,15 +192,25 @@ systemctl --user enable macos-theme-watch.service
 "$HOME/.local/bin/macos-theme-switch"
 systemctl --user restart macos-theme-watch.service
 
+echo "$VERSION_STAMP" > "$STATE_DIR/installed"
+
 step "8/8 Checking"
-bash "$here/verify.sh" --inline || true
+all_active=1
+for e in "$USER_THEME" "${EXTENSIONS[@]}"; do [[ $(ext_state "$e") == ACTIVE ]] || all_active=0; done
+if (( all_active )); then
+  finish          # extensions were already loaded (e.g. a reinstall) — no logout needed
+else
+  banner "STEP 1 OF 2 DONE — now log out and log back in" "$Y"
+  cat <<EOF
 
-cat <<EOF
+  GNOME only turns on new extensions (the dock, blur) when you log in.
+  A restart is not needed.
 
-${B}Next:${N}
-  1. ${B}Log out and back in${N} — GNOME only loads new extensions (dock, blur) at login.
-  2. Run ${B}verify.sh${N} again (right-click → Run as a Program) — it should say all checks passed.
-  3. Set up backups: open ${B}Backups${N} (files → external drive or Google Drive, automatic)
-     and ${B}Timeshift${N} (choose RSYNC, ~5 daily snapshots) from the app grid.
-Undo everything any time with ${B}uninstall.sh${N}.
+  1. Log out:   top-right menu → ⏻ → Log Out
+  2. Log back in
+  3. Run the installer again — it only takes a few seconds the second time:
+     $RERUN
+
+  It will say ${B}ALL DONE ✅${N} when everything is ready.
 EOF
+fi

@@ -21,19 +21,29 @@ Make Ubuntu look and feel like macOS in one step. No YouTube tutorial, no 30 ter
 
 ## Install
 
-1. Click **Code → Download ZIP** on this page, then open the ZIP and extract it.
-2. Open the extracted folder in **Files**, right-click **`install.sh`** → **Run as a Program**.
-3. Type your password when asked. The installer needs it once to install packages.
-4. **Log out and back in.**
-5. Right-click **`verify.sh`** → **Run as a Program**. It should say *All checks passed*.
+It takes two runs of the same installer, with a log out in between. The installer tells you what to do at each point.
 
-Or from a terminal:
+**Option A: download and click**
+
+1. Click **Code → Download ZIP** on this page, then open the ZIP and extract it.
+2. Open the extracted folder in **Files**, right-click **`install.sh`** → **Run as a Program**, and type your password when asked.
+3. When it says **STEP 1 OF 2 DONE**, **log out and log back in**. A restart isn't needed.
+4. Run **`install.sh`** again. It takes a few seconds the second time.
+5. When it says **ALL DONE ✅**, right-click **`verify.sh`** → **Run as a Program** to confirm. It should say *All checks passed*.
+
+**Option B: terminal**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/akshitzaveri/ubuntu-macos-look/main/install.sh | bash
 ```
 
-Everything installs for your user only. Running `install.sh` again is safe.
+When it says **STEP 1 OF 2 DONE**, log out, log back in, and run the same command again. When it says **ALL DONE ✅**, confirm with:
+
+```bash
+~/.cache/ubuntu-macos-look/repo/verify.sh
+```
+
+If it says **NOT QUITE YET**, log out and back in, then run the installer again. Everything installs for your user only, and running the installer again is always safe. To force a full reinstall, run `install.sh --reinstall`.
 
 ### After installing: set up backups
 
