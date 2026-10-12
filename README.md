@@ -19,8 +19,36 @@ Make Ubuntu look and feel like macOS in one step. No YouTube tutorial, no 30 ter
 
 ## Requirements
 
-- Ubuntu 24.04 or newer with the default GNOME desktop (GNOME 46+)
-- Tested on Ubuntu 26.04 / GNOME 50
+- Ubuntu with the default GNOME desktop
+- **Tested on Ubuntu 26.04 / GNOME 50.** 24.04 (GNOME 46) and newer should work but hasn't been tested yet. Reports welcome.
+
+## Before you install: what won't feel like a Mac
+
+This gets Ubuntu close to macOS, but not all the way. Know these limits before you install:
+
+**Window buttons**
+- Apps that draw their own title bar ignore the left-side close/minimize/maximize layout and keep Windows-style buttons on the right. This affects many Electron apps, some web-app windows and Java apps, and no theme can change it.
+- Chrome can follow the layout: **Settings → Appearance → Mode: GTK**, then right-click the tab bar → **Use system title bar and borders**.
+
+**Keyboard (only if you add the Mac keyboard option)**
+- On a PC keyboard, the keys don't match their labels. **Alt acts as ⌘ and the Windows key acts as ⌥**, so they sit where they would on a Mac. Expect a few days to get used to it.
+- On multi-OS keyboards (Logitech, Keychron, Rapoo), use Windows/PC mode and follow the Mac labels: **cmd** is ⌘ and **alt/option** is ⌥.
+- Shortcuts follow macOS, not Windows:
+  - **⌥←/→** jumps a word and **⌘←/→** jumps to the start or end of the line.
+  - **Ctrl+←/→ switches desktops**, as it does on a Mac.
+  - **⌥⌫** deletes a word and **⌘⌫** deletes the line.
+- Terminals keep Linux behavior: **Ctrl+C** stops a command, while **⌘C/⌘V** copy and paste.
+- Holding ⌥ or ⌘ on its own for more than 2 seconds can open an app's menu.
+
+**Missing entirely**
+- No global menu bar (File, Edit… at the top of the screen)
+- No dock magnification
+- No Spotlight-style small search box: search opens full-screen
+- No Apple apps, AirDrop, iCloud Drive or Siri. The [Guide](GUIDE.md) lists alternatives.
+
+**Other**
+- GNOME treats GTK4 (libadwaita) theming as unsupported, so a few GTK4 apps may look slightly off.
+- After a major Ubuntu upgrade, run `install.sh` again.
 
 ## Install
 
@@ -96,12 +124,6 @@ Right-click **`uninstall.sh`** → **Run as a Program**. It removes the themes, 
 - **apt packages:** git, curl, unzip, sassc, libglib2.0-dev-bin, libxml2-utils, python3, gnome-shell-extensions, deja-dup, timeshift, libheif-plugin-libde265, heif-gdk-pixbuf, heif-thumbnailer, libheif-examples
 - **Login screen (optional):** `/usr/local/share/ubuntu-macos-look/gdm-theme.gresource`, `/usr/share/gdm/dconf/95-ubuntu-macos-look`, and the `gdm-theme.gresource` alternatives link
 - **Backup:** your previous settings are saved in `~/.local/share/ubuntu-macos-look/`
-
-## Known limitations
-
-- Some Electron apps draw their own Windows-style title bar buttons and ignore the left-side layout. A theme can't change that.
-- GNOME treats libadwaita (GTK4) theming as unsupported. A few GTK4 apps may look slightly off.
-- After a major Ubuntu upgrade, run `install.sh` again.
 
 ## Credits
 

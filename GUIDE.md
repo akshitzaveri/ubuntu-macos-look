@@ -70,6 +70,7 @@ Everything except `login-screen.sh` only affects your own user account. Each scr
 - ⌘Backspace clears to the start of the line. `toshy.sh` adds this; Toshy's default doesn't work in Chrome or GTK apps.
 - In terminals, ⌘C/⌘V copy and paste, and Ctrl+C still stops a command.
 - **Multi-OS keyboards** (Logitech, Keychron, Rapoo): use **Windows/PC mode**, not Mac mode. Follow the Mac labels: the key marked **cmd** (next to the space bar) is ⌘, and the one marked **alt/option** is ⌥.
+- ⌥←/→ jumps a word, ⌘←/→ jumps to the start or end of the line, and Ctrl+←/→ switches desktops, all as on a Mac.
 - ⌥⌫ (Option+Backspace) deletes a word, and ⌘⌫ deletes the line. `toshy.sh` also stops Option and Cmd from opening app menus (a stray Alt tap Toshy sends by default).
 - The Super key alone no longer opens the overview. Use ⌘Space or a three-finger swipe up.
 - **A key stuck?** Press **F16**, or run `toshy-services-stop` (from **Ctrl+Alt+F3** if needed). `toshy-services-restart` turns it back on.
