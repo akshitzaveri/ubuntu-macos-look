@@ -58,13 +58,14 @@ Everything except `login-screen.sh` only affects your own user account. Each scr
 
 ## Mac keyboard (`toshy.sh`, optional)
 
-[Toshy](https://github.com/RedBearAK/toshy) remaps keys per app so your Mac shortcuts work. On a PC keyboard:
+[Toshy](https://github.com/RedBearAK/toshy) remaps keys per app so your Mac shortcuts work. During setup, `toshy.sh` asks about **each keyboard** it finds: *what's printed on the key right next to the space bar?*
 
-| Mac key | Press |
-|---|---|
-| ⌘ Command | **Alt** (next to the space bar, same spot as on a Mac) |
-| ⌥ Option | **Windows / Super** |
-| ⌃ Control | **Ctrl** |
+| Answer | ⌘ Command is… | ⌥ Option is… | Good for |
+|---|---|---|---|
+| **Alt** (PC labels) | the **Windows** key | the **Alt** key | Laptop and PC keyboards: keys do what their labels say |
+| **cmd**, or Mac positions (default) | the key **next to the space bar** | the key one further left | Multi-OS keyboards with Mac labels, or Mac muscle memory |
+
+Each keyboard keeps its own setting, and Toshy switches automatically depending on which one you type on, so a laptop keyboard and an external one can differ. Plugged in a new keyboard? Run `bash toshy.sh --keyboards` to choose again.
 
 - ⌘C/V/X/Z, ⌘Q, ⌘W, ⌘T, ⌘Tab and ⌘Space work as on macOS. ⌘⇧3/4/5 take screenshots.
 - ⌘Backspace clears to the start of the line. `toshy.sh` adds this; Toshy's default doesn't work in Chrome or GTK apps.

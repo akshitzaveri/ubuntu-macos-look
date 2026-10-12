@@ -31,7 +31,7 @@ This gets Ubuntu close to macOS, but not all the way. Know these limits before y
 - Chrome can follow the layout: **Settings → Appearance → Mode: GTK**, then right-click the tab bar → **Use system title bar and borders**.
 
 **Keyboard (only if you add the Mac keyboard option)**
-- On a PC keyboard, the keys don't match their labels. **Alt acts as ⌘ and the Windows key acts as ⌥**, so they sit where they would on a Mac. Expect a few days to get used to it.
+- Setup asks, for each keyboard, whether keys should **follow their printed labels** (Windows key = ⌘, Alt = ⌥) or **Mac positions** (the key next to the space bar = ⌘). Either way, expect a few days to get used to it.
 - On multi-OS keyboards (Logitech, Keychron, Rapoo), use Windows/PC mode and follow the Mac labels: **cmd** is ⌘ and **alt/option** is ⌥.
 - Shortcuts follow macOS, not Windows:
   - **⌥←/→** jumps a word and **⌘←/→** jumps to the start or end of the line.
