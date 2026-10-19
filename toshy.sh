@@ -63,6 +63,10 @@ if [[ ${1:-} == --undo ]]; then
   [[ -x $TOSHY_DIR/setup_toshy.py ]] || fetch_toshy
   (cd "$TOSHY_DIR" && ./setup_toshy.py uninstall </dev/tty)
   gsettings reset org.gnome.mutter overlay-key
+  gnome-extensions disable "$HELPER" 2>/dev/null
+  list_edit enabled-extensions remove "$HELPER"
+  gsettings reset org.gnome.desktop.wm.keybindings switch-input-source
+  gsettings reset org.gnome.desktop.wm.keybindings switch-input-source-backward
   echo "${G}Done.${N} Log out and back in to finish."
   exit 0
 fi
