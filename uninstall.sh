@@ -75,6 +75,11 @@ if [[ -f $STATE_DIR/extras-settings.done ]]; then
   gsettings reset org.gnome.desktop.wm.preferences titlebar-font
 fi
 
+if [[ -x ~/.local/bin/toshy-config-start ]]; then
+  read -rp "Toshy (Mac keyboard shortcuts) is installed. Remove it too? [y/N] " ans </dev/tty
+  [[ $ans =~ ^[Yy]$ ]] && UML_IN_TERM=1 bash "$here/toshy.sh" --undo
+fi
+
 if [[ $(readlink -f /usr/share/gnome-shell/gdm-theme.gresource) == /usr/local/share/ubuntu-macos-look/* ]]; then
   UML_IN_TERM= bash "$here/login-screen.sh" --undo
 fi
