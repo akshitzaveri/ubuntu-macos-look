@@ -7,8 +7,13 @@ source "$here/lib/common.sh"
 ensure_terminal "$@"
 trap pause_on_exit EXIT
 
-[[ -f $STATE_DIR/original-settings.done ]] || die "No install backup found in $STATE_DIR — nothing to restore."
-read -rp "Remove the macOS look and restore your previous settings? [y/N] " ans </dev/tty
+if [[ -f $STATE_DIR/original-settings.done ]]; then
+  HAVE_BACKUP=1; prompt="Remove the macOS look and restore your previous settings?"
+else
+  HAVE_BACKUP=; warn "No install backup found in $STATE_DIR — settings will be reset to Ubuntu defaults instead."
+  prompt="Remove the macOS look and reset its settings to Ubuntu defaults?"
+fi
+read -rp "$prompt [y/N] " ans </dev/tty
 [[ $ans =~ ^[Yy]$ ]] || exit 0
 
 step "Stopping light/dark automation"
@@ -22,9 +27,25 @@ for p in "${TOUCHED_PATHS[@]}"; do
   f=$STATE_DIR/orig$(tr / _ <<<"$p").dconf
   dconf reset -f "$p"; [[ -s $f ]] && dconf load "$p" < "$f"
 done
-for k in enabled-extensions disabled-extensions; do gsettings set org.gnome.shell $k "$(cat "$STATE_DIR/orig-$k")"; done
 MK=org.gnome.settings-daemon.plugins.media-keys
-gsettings set $MK custom-keybindings "$(cat "$STATE_DIR/orig-custom-keybindings")"
+if [[ -n $HAVE_BACKUP ]]; then
+  for k in enabled-extensions disabled-extensions; do gsettings set org.gnome.shell $k "$(cat "$STATE_DIR/orig-$k")"; done
+  gsettings set $MK custom-keybindings "$(cat "$STATE_DIR/orig-custom-keybindings")"
+else
+  # No backup: drop only what this project added, re-enable Ubuntu Dock and Desktop Icons.
+  python3 - "${EXTENSIONS[@]}" "$USER_THEME" just-perfection-desktop@just-perfection logomenu@aryan_k rounded-window-corners@fxgn <<'PY2'
+import ast, subprocess, sys
+ours = set(sys.argv[1:]); stock = ['ubuntu-dock@ubuntu.com', 'ding@rastersoft.com']
+def get(k): return ast.literal_eval(subprocess.check_output(['gsettings', 'get', 'org.gnome.shell', k], text=True).strip().removeprefix('@as '))
+en = [e for e in get('enabled-extensions') if e not in ours]
+en += [e for e in stock if e not in en]
+dis = [e for e in get('disabled-extensions') if e not in stock]
+subprocess.run(['gsettings', 'set', 'org.gnome.shell', 'enabled-extensions', str(en)])
+subprocess.run(['gsettings', 'set', 'org.gnome.shell', 'disabled-extensions', str(dis)])
+PY2
+  kb=$(gsettings get $MK custom-keybindings | sed "s#'$KEYBINDING', *##; s#, *'$KEYBINDING'##; s#'$KEYBINDING'##")
+  [[ $kb == *"[]" ]] && gsettings reset $MK custom-keybindings || gsettings set $MK custom-keybindings "$kb"
+fi
 dconf reset -f "$KEYBINDING"
 
 step "Removing themes, icons, cursor, wallpapers"
